@@ -9,6 +9,7 @@ public class JC_DestroyOnHit : MonoBehaviour
 
     [SerializeField] private LayerMask destroySelfOnLayers;
     [SerializeField] private LayerMask destroyOtherOnLayers;
+    [SerializeField] private GameObject enemyDestroyedEffectPrefab;
 
     private Collider _cachedCollider;
     private bool _isPendingDestroy;
@@ -83,8 +84,21 @@ public class JC_DestroyOnHit : MonoBehaviour
         {
             GameObject enemyObject = sourceObject.layer == EnemyLayer ? sourceObject : targetObject;
             JC_ScoreManager.Instance?.TryAddEnemyKill(enemyObject);
+
+            JC_DestroyOnHit enemyDestroyOnHit = enemyObject.GetComponent<JC_DestroyOnHit>();
+            enemyDestroyOnHit?.SpawnEnemyDestroyedEffect();
         }
 
         Destroy(targetObject);
+    }
+
+    private void SpawnEnemyDestroyedEffect()
+    {
+        if (enemyDestroyedEffectPrefab == null)
+        {
+            return;
+        }
+
+        Instantiate(enemyDestroyedEffectPrefab, transform.position, transform.rotation);
     }
 }
