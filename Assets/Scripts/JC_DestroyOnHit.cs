@@ -19,6 +19,11 @@ public class JC_DestroyOnHit : MonoBehaviour
         _cachedCollider = GetComponent<Collider>();
     }
 
+    private void OnEnable()
+    {
+        _isPendingDestroy = false;
+    }
+
     private void Update()
     {
         if (_isPendingDestroy || _cachedCollider == null)
@@ -58,7 +63,7 @@ public class JC_DestroyOnHit : MonoBehaviour
             if (shouldDestroySelf)
             {
                 _isPendingDestroy = true;
-                Destroy(gameObject);
+                DespawnObject(gameObject);
                 return;
             }
         }
@@ -87,6 +92,18 @@ public class JC_DestroyOnHit : MonoBehaviour
 
             JC_DestroyOnHit enemyDestroyOnHit = enemyObject.GetComponent<JC_DestroyOnHit>();
             enemyDestroyOnHit?.SpawnEnemyDestroyedEffect();
+        }
+
+        DespawnObject(targetObject);
+    }
+
+    private static void DespawnObject(GameObject targetObject)
+    {
+        JC_PooledObject pooledObject = targetObject.GetComponent<JC_PooledObject>();
+        if (pooledObject != null)
+        {
+            pooledObject.ReturnToPool();
+            return;
         }
 
         Destroy(targetObject);

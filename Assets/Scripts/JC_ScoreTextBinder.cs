@@ -6,6 +6,7 @@ public class JC_ScoreTextBinder : MonoBehaviour
 {
     [SerializeField] private JC_ScoreManager scoreManager;
     [SerializeField] private string scorePrefix = "Score: ";
+    [SerializeField] private string highScorePrefix = "Best: ";
     [SerializeField] private Vector2 screenPadding = new Vector2(24f, 24f);
     [SerializeField] private int fontSize = 28;
     [SerializeField] private Color textColor = Color.white;
@@ -13,6 +14,7 @@ public class JC_ScoreTextBinder : MonoBehaviour
     private static TMP_FontAsset _runtimeFontAsset;
 
     private TextMeshProUGUI _scoreText;
+    private TextMeshProUGUI _highScoreText;
 
     private void Awake()
     {
@@ -30,7 +32,9 @@ public class JC_ScoreTextBinder : MonoBehaviour
         if (scoreManager != null)
         {
             scoreManager.ScoreChanged += HandleScoreChanged;
+            scoreManager.HighScoreChanged += HandleHighScoreChanged;
             HandleScoreChanged(scoreManager.CurrentScore);
+            HandleHighScoreChanged(scoreManager.HighScore);
         }
     }
 
@@ -39,6 +43,7 @@ public class JC_ScoreTextBinder : MonoBehaviour
         if (scoreManager != null)
         {
             scoreManager.ScoreChanged -= HandleScoreChanged;
+            scoreManager.HighScoreChanged -= HandleHighScoreChanged;
         }
     }
 
@@ -82,6 +87,25 @@ public class JC_ScoreTextBinder : MonoBehaviour
         _scoreText.overflowMode = TextOverflowModes.Overflow;
         _scoreText.color = textColor;
         _scoreText.text = $"{scorePrefix}0";
+
+        GameObject highScoreObject = new GameObject("HighScoreText");
+        highScoreObject.transform.SetParent(canvasObject.transform, false);
+
+        RectTransform highScoreRectTransform = highScoreObject.AddComponent<RectTransform>();
+        highScoreRectTransform.anchorMin = new Vector2(1f, 1f);
+        highScoreRectTransform.anchorMax = new Vector2(1f, 1f);
+        highScoreRectTransform.pivot = new Vector2(1f, 1f);
+        highScoreRectTransform.anchoredPosition = new Vector2(-screenPadding.x, -screenPadding.y - 48f);
+        highScoreRectTransform.sizeDelta = new Vector2(260f, 40f);
+
+        _highScoreText = highScoreObject.AddComponent<TextMeshProUGUI>();
+        _highScoreText.font = GetRuntimeFontAsset();
+        _highScoreText.fontSize = fontSize - 4;
+        _highScoreText.alignment = TextAlignmentOptions.MidlineRight;
+        _highScoreText.enableWordWrapping = false;
+        _highScoreText.overflowMode = TextOverflowModes.Overflow;
+        _highScoreText.color = new Color(textColor.r, textColor.g, textColor.b, 0.8f);
+        _highScoreText.text = $"{highScorePrefix}0";
     }
 
     private void ResolveScoreManager()
@@ -96,6 +120,12 @@ public class JC_ScoreTextBinder : MonoBehaviour
     {
         EnsureScoreText();
         _scoreText.text = $"{scorePrefix}{score}";
+    }
+
+    private void HandleHighScoreChanged(int highScore)
+    {
+        EnsureScoreText();
+        _highScoreText.text = $"{highScorePrefix}{highScore}";
     }
 
     private static TMP_FontAsset GetRuntimeFontAsset()

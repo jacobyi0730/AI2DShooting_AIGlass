@@ -17,6 +17,7 @@ public class JC_Health : MonoBehaviour
     public bool IsDead => currentHp <= 0;
 
     public event Action<int, int> HealthChanged;
+    public event Action Died;
 
     private Slider _healthSlider;
 
@@ -29,6 +30,7 @@ public class JC_Health : MonoBehaviour
         }
 
         EnsureHealthBar();
+        EnsureGameOverController();
         NotifyHealthChanged();
     }
 
@@ -45,6 +47,7 @@ public class JC_Health : MonoBehaviour
 
         if (currentHp == 0)
         {
+            Died?.Invoke();
             HandleDeath();
         }
 
@@ -123,6 +126,14 @@ public class JC_Health : MonoBehaviour
 
         _healthSlider.fillRect = fillRect;
         _healthSlider.targetGraphic = backgroundImage;
+    }
+
+    private void EnsureGameOverController()
+    {
+        if (GetComponent<JC_GameOverController>() == null)
+        {
+            gameObject.AddComponent<JC_GameOverController>();
+        }
     }
 
     private void NotifyHealthChanged()

@@ -1188,6 +1188,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::JC_ScoreTextBinder
   scoreManager: {fileID: 2145000002}
   scorePrefix: 'Score: '
+  highScorePrefix: 'Best: '
   screenPadding: {x: 24, y: 24}
   fontSize: 28
   textColor: {r: 1, g: 1, b: 1, a: 1}

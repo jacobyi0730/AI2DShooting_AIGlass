@@ -11,7 +11,15 @@ public class JC_PlayerBullet : MonoBehaviour
 
         if (transform.position.y > despawnYPosition)
         {
-            Destroy(gameObject);
+            JC_PooledObject pooledObject = GetComponent<JC_PooledObject>();
+            if (pooledObject != null)
+            {
+                pooledObject.ReturnToPool();
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

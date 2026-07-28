@@ -7,8 +7,21 @@ public class JC_PlayerShooter : MonoBehaviour
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private JC_BulletSpawnPoint bulletSpawnPoint;
     [SerializeField, Min(0f)] private float fireInterval = 0.2f;
+    [SerializeField, Min(0)] private int initialBulletPoolSize = 20;
 
     private float _nextFireTime;
+    private JC_ObjectPool _bulletPool;
+
+    private void Awake()
+    {
+        _bulletPool = GetComponent<JC_ObjectPool>();
+        if (_bulletPool == null)
+        {
+            _bulletPool = gameObject.AddComponent<JC_ObjectPool>();
+        }
+
+        _bulletPool.Initialize(bulletPrefab, initialBulletPoolSize);
+    }
 
     private void Update()
     {
@@ -32,7 +45,7 @@ public class JC_PlayerShooter : MonoBehaviour
             return;
         }
 
-        Instantiate(bulletPrefab, bulletSpawnPoint.Position, Quaternion.identity);
+        _bulletPool.Get(bulletSpawnPoint.Position, Quaternion.identity);
         _nextFireTime = Time.time + fireInterval;
     }
 }
